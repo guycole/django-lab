@@ -1,0 +1,7 @@
+<h2>Alpha Confirm Delete</h2>
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_table }}
+    <input type="submit" value="Submit">
+</form>

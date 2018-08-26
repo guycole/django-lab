@@ -1,0 +1,11 @@
+<h1>Alpha Detail</h1>
+
+{% if error_message %}
+    <p><strong>{{ error_message }}</strong></p>
+{% endif %}
+
+<form action="{% url 'polls:vote' question.id %}" method="post">
+    {% csrf_token %}
+
+    <input type="submit" value="Update">
+</form>

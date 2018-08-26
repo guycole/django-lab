@@ -1,0 +1,15 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'app1/style.css' %}">
+
+<h1>App1 Index</h1>
+
+{% if alpha_result_list %}
+    <ul>
+        {% for row in alpha_result_list %}
+            <li><a href="{% url 'app1:alpha-update' row.pk %}">{{ row.string_val }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Empty Alpha List</p>
+{% endif %}
