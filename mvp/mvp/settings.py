@@ -25,7 +25,7 @@ SECRET_KEY = '(9^c03!z=e5%4-2%g5f(++qen^9=g1gqw2rfu8(rr3v3%%wz62'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['34.212.169.216']
 
 
 # Application definition
@@ -79,8 +79,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'mvp',
-        'USER': 'django',
-        'PASSWORD': 'awesome',
+        'USER': 'mvp',
+        'PASSWORD': 'mvpuser',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -123,3 +123,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
