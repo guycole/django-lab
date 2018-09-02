@@ -1,16 +1,19 @@
 # django-lab
 A simple demonstration of a Django/PostGreSQL/EC2 deloyment.  Run time 
-economy is the primary goal.  AWS RDS is nice, but managed services are 
-pricey.  Many applications run well enough w/the database and web server 
-on the same EC2 instance.  This post demonstrates a minimal deployment 
-to AWS LINUX hosted on a EC2 server.  I will skip most of the AWS 
-administration since it is thoroughly covered within the AWS documentation.
+economy is the primary goal.  Most examples focus on a dejango deployment
+via Elastic Beanstalk and connected to RDS, nice but managed 
+services are pricey.  Many applications run well enough w/the database 
+and web server on the same EC2 instance.  This project demonstrates a 
+minimal deployment to AWS LINUX hosted on a single EC2 server.  
+
+This is not a beginners tutorial.  Not so advanced either, but assumes 
+you know AWS EC2, UNIX and django. 
 
 The django project is named "mvp" and consists of two simple applications 
 ("app1" and "app2") because I wanted to investigate navigating between 
 multiple applications.
 
-I will created an account "django" to hold the django application.  httpd 
+I created an account "django" to hold the django application.  httpd 
 (apache) will use uwsgi as a bridge to django.  "django" (the UNIX account) 
 will need to be a member of the apache (UNIX) group.
 
@@ -44,7 +47,6 @@ instance using a LINUX2 AMI w/a 8GB EBS file system.
 1.  Start httpd and ensure you can connect to it
     1. `service httpd start` (as root)
     1. visit your public IP address w/a browser, should see Apache test page
-    1. edit /etc/httpd/httpd.conf
 
 1.  Install virtualenv (as root)
     1. `pip3 install virtualenv`
@@ -64,16 +66,20 @@ instance using a LINUX2 AMI w/a 8GB EBS file system.
         1. `psql -U django -d mvp` (there are no tables yet)
         1. `\q` will exit
     1. establish virtualenv and seed environment
+        1. `cd` (return to home directory)
         1. `virtualenv -p /usr/bin/python3 venv`
-        1. source venv/bin/activate
+        1. `source venv/bin/activate`
         1. `pip install -r requirements.txt`
         1. Check for happy django startup
             1. `python manage.py runserver` (Control C to exit)
         1. Run migrations and ensure ok database connection
             1. `python manage.py migrate`
+        1. Collect static images (i.e. files)
+            1. `python manage.py collectstatic`
         1. Edit mvp/settings.py and tweak ALLOWED_HOSTS to reflect your EC2 public IP
     1. build and install mod_wsgi
         1. latest sources are at https://github.com/GrahamDumpleton/mod_wsgi/releases
+        1. `cd` (return to home directory)
         1. `curl https://codeload.github.com/GrahamDumpleton/mod_wsgi/tar.gz/4.6.4 --output mod_wsgi.tgz`
         1. `tar -xvzf mod_wsgi.tgz; cd mod_wsgi-4.6.4; ./configure; make`
         1. exit (back to UNIX root shell), `cd /home/django/mod_wsgi-4.6.4; make install`
@@ -99,12 +105,16 @@ Alias /static/ /home/django/django-lab/mvp/static/
 LoadModule wsgi_module /usr/lib64/httpd/modules/mod_wsgi.so
 ```
     1. ensure file permissions are ok
-        1. chmod 750 /home/django
-        1. chgrp -R apache /home/django
+        1. `chmod 750 /home/django`
+        1. `chgrp -R apache /home/django`
     1. restart httpd
         1. `service httpd restart`
         1. ensure mod_wsgi is loaded
             1. `httpd -M | grep -i wsgi`
     
-1.  Almost done!  Visit your EC2 instance w/a browser, 
-python manage.py collectstatic
+1. Visit your EC2 instance w/a browser and you should see the splash page.
+    1.  URL should be IP address/mvp/app1
+    1.  Visit IP address/mvp/app1/alpha/create/ to create a row in database
+        1. Note the URL changes after submit
+        1. Visit IP address/mvp/app1 and note that row is visible (click through row to edit)
+        1. Inspect urls.py for other features.
